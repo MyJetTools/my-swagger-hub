@@ -4,7 +4,7 @@ on:
     tags: "*"
 
 env:
-  IMAGE_NAME: myjettools/my-swagger-ui
+  IMAGE_NAME: myjettools/my-swagger-hub
 
 
 jobs:
