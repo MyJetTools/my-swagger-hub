@@ -27,8 +27,6 @@ pub struct Route {
     pub name: String,
     pub url: String,
     pub remote_url: String,
-    pub host: String,
-    pub scheme: String,
 }
 
 fn get_settings_filename() -> String {
