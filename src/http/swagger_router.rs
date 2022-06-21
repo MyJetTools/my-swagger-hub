@@ -28,7 +28,12 @@ impl HttpServerMiddleware for SwaggerRouterMiddleware {
 
         for route in &self.app.settings.routes {
             if route.url == path {
-                match flurl::FlUrl::new(route.remote_url.as_str()).get().await {
+                match flurl::FlUrl::new(route.remote_url.as_str())
+                    .with_header("Host", route.host.as_str())
+                    .with_header("X-Forwarded-Proto", route.scheme.as_str())
+                    .get()
+                    .await
+                {
                     Ok(result) => {
                         let body = result.receive_body().await.unwrap();
 
