@@ -7,7 +7,7 @@ use crate::app::AppContext;
 use super::SwaggerRouterMiddleware;
 
 pub fn setup_server(app: &Arc<AppContext>) {
-    let mut http_server = MyHttpServer::new(SocketAddr::from(([0, 0, 0, 0], 8080)));
+    let mut http_server = MyHttpServer::new(SocketAddr::from(([0, 0, 0, 0], 8000)));
 
     let swagger_middleware = crate::http::SwaggerMiddleware::new(app.clone());
 
