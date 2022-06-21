@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 use tokio::{fs::File, io::AsyncReadExt};
 
+const SETTINGS_FILE_NAME: &str = ".my-swagger-hub";
 #[derive(Serialize, Deserialize)]
 pub struct SettingsModel {
     pub routes: Vec<Route>,
@@ -32,8 +33,8 @@ fn get_settings_filename() -> String {
     let path = env!("HOME");
 
     if path.ends_with('/') {
-        return format!("{}{}", path, ".swagger-ui");
+        return format!("{}{}", path, SETTINGS_FILE_NAME);
     }
 
-    return format!("{}{}", path, "/.swagger-ui");
+    return format!("{}{}{}", path, "/", SETTINGS_FILE_NAME);
 }
