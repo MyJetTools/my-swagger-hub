@@ -17,7 +17,5 @@ async fn main() {
 
     crate::http::start_up::setup_server(&app);
 
-    loop {
-        tokio::time::sleep(std::time::Duration::from_secs(1)).await;
-    }
+    app.app_states.wait_until_shutdown().await;
 }
