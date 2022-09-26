@@ -31,7 +31,7 @@ impl HttpServerMiddleware for SwaggerRouterMiddleware {
             if route.url == path {
                 let headers = ctx.request.get_headers();
 
-                let mut fl_url = flurl::FlUrl::new(route.remote_url.as_str());
+                let mut fl_url = flurl::FlUrl::new(route.remote_url.as_str(), None);
 
                 if let Some(host) = get_host(&headers) {
                     println!("Overrided host: {}", host);
@@ -60,6 +60,7 @@ impl HttpServerMiddleware for SwaggerRouterMiddleware {
                             status_code: 503,
                             content_type: WebContentType::Text,
                             content: format!("{:?}", err).into_bytes(),
+                            write_to_log: true,
                         });
                     }
                 }
@@ -76,19 +77,15 @@ fn get_host(header_map: &HeaderMap) -> Option<&str> {
 }
 
 fn get_scheme(header_map: &HeaderMap) -> &str {
-
-
     if header_map.contains_key("X-Forwarded-Proto") {
         let result = header_map.get("X-Forwarded-Proto").unwrap();
         return result.to_str().unwrap();
     }
 
     if header_map.contains_key("Scheme") {
-       let result = header_map.get("Scheme").unwrap();
-       return result.to_str().unwrap();
+        let result = header_map.get("Scheme").unwrap();
+        return result.to_str().unwrap();
     }
 
-    return "http"
-
-
+    return "http";
 }

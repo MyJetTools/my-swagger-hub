@@ -15,5 +15,5 @@ pub fn setup_server(app: &Arc<AppContext>) {
 
     http_server.add_middleware(Arc::new(swagger_middleware));
 
-    http_server.start(app.clone());
+    http_server.start(app.app_states.clone(), my_logger::LOGGER.clone());
 }
