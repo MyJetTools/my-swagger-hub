@@ -1,6 +1,5 @@
 use std::sync::Arc;
 
-use hyper::HeaderMap;
 use my_http_server::{
     HttpContext, HttpFailResult, HttpOkResult, HttpOutput, HttpServerMiddleware,
     HttpServerRequestFlow, WebContentType,
@@ -25,20 +24,18 @@ impl HttpServerMiddleware for SwaggerRouterMiddleware {
         ctx: &mut HttpContext,
         get_next: &mut HttpServerRequestFlow,
     ) -> Result<HttpOkResult, HttpFailResult> {
-        let path = ctx.request.get_path_lower_case();
+        let path = ctx.request.get_path().to_lowercase();
 
-        for route in &self.app.settings.routes {
+        for route in self.app.settings.get_routes().await {
             if route.url == path {
-                let headers = ctx.request.get_headers();
+                let mut fl_url = flurl::FlUrl::new(route.remote_url.as_str());
 
-                let mut fl_url = flurl::FlUrl::new(route.remote_url.as_str(), None);
-
-                if let Some(host) = get_host(&headers) {
-                    println!("Overrided host: {}", host);
+                if let Some(host) = ctx.request.get_header("host") {
+                    println!("Overridden host: {}", host);
                     fl_url = fl_url.with_header("Host", host);
                 }
 
-                fl_url = fl_url.with_header("X-Forwarded-Proto", get_scheme(&headers));
+                fl_url = fl_url.with_header("X-Forwarded-Proto", get_scheme(&ctx));
 
                 match fl_url.get().await {
                     Ok(result) => {
@@ -71,20 +68,13 @@ impl HttpServerMiddleware for SwaggerRouterMiddleware {
     }
 }
 
-fn get_host(header_map: &HeaderMap) -> Option<&str> {
-    let result = header_map.get("host")?;
-    result.to_str().ok()
-}
-
-fn get_scheme(header_map: &HeaderMap) -> &str {
-    if header_map.contains_key("X-Forwarded-Proto") {
-        let result = header_map.get("X-Forwarded-Proto").unwrap();
-        return result.to_str().unwrap();
+fn get_scheme(header_map: &HttpContext) -> &str {
+    if let Some(value) = header_map.request.get_header("x-forwarded-proto") {
+        return value;
     }
 
-    if header_map.contains_key("Scheme") {
-        let result = header_map.get("Scheme").unwrap();
-        return result.to_str().unwrap();
+    if let Some(value) = header_map.request.get_header("scheme") {
+        return value;
     }
 
     return "http";

@@ -1,20 +1,24 @@
 [package]
-name = "my_swagger_hub"
+name = "my-swagger-hub"
 version = "0.1.1"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-my-http-server = { tag = "0.2.7", git = "https://github.com/MyJetTools/my-http-server.git", features = [
-    "static_files",
+my-http-server = { tag = "0.5.0", git = "https://github.com/MyJetTools/my-http-server.git", features = [
+    "static-files",
 ] }
-rust-extensions = { tag = "0.1.2", git = "https://github.com/MyJetTools/rust-extensions.git" }
-my-http-server-controllers = { tag = "0.2.7", git = "https://github.com/MyJetTools/my-http-server-controllers.git" }
+rust-extensions = { tag = "0.1.3", git = "https://github.com/MyJetTools/rust-extensions.git" }
+my-http-server-controllers = { tag = "0.5.0", git = "https://github.com/MyJetTools/my-http-server-controllers.git" }
 
-flurl = { tag = "0.2.2", git = "https://github.com/MyJetTools/fl-url.git" }
+flurl = { tag = "0.2.3", git = "https://github.com/MyJetTools/fl-url.git" }
 
 my-logger = { tag = "0.2.0", git = "https://github.com/MyJetTools/my-logger.git" }
+
+my-settings-reader = { tag = "0.1.5", git = "https://github.com/MyJetTools/my-settings-reader.git", features = [
+    "background-reader",
+] }
 
 tokio = { version = "*", features = ["full"] }
 async-trait = "*"

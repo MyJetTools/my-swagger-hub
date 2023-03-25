@@ -9,7 +9,7 @@ mod settings;
 
 #[tokio::main]
 async fn main() {
-    let settings = settings::SettingsModel::read_settings().await;
+    let settings = settings::SettingsReader::new(".my-swagger-hub").await;
 
     let app = AppContext::new(settings);
 

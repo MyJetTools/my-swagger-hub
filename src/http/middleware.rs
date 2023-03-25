@@ -28,7 +28,7 @@ impl HttpServerMiddleware for SwaggerMiddleware {
         ctx: &mut HttpContext,
         get_next: &mut HttpServerRequestFlow,
     ) -> Result<HttpOkResult, HttpFailResult> {
-        let path = ctx.request.get_path_lower_case();
+        let path = ctx.request.get_path().to_lowercase();
 
         if !path.starts_with("/swagger") {
             return get_next.next(ctx).await;
@@ -38,7 +38,7 @@ impl HttpServerMiddleware for SwaggerMiddleware {
             let output = HttpOutput::Content {
                 headers: None,
                 content_type: Some(WebContentType::Html),
-                content: get_index_page_content(self.app.as_ref(), self.index),
+                content: get_index_page_content(self.app.as_ref(), self.index).await,
             };
             return Ok(HttpOkResult {
                 write_telemetry: false,
@@ -152,19 +152,19 @@ impl HttpServerMiddleware for SwaggerMiddleware {
     }
 }
 
-fn get_index_page_content(app: &AppContext, index: usize) -> Vec<u8> {
+async fn get_index_page_content(app: &AppContext, index: usize) -> Vec<u8> {
     let mut result = Vec::new();
 
     result.extend_from_slice(&crate::resources::INDEX_PAGE[..index]);
-    add_swagger_data(&mut result, app);
+    add_swagger_data(&mut result, app).await;
     result.extend_from_slice(&crate::resources::INDEX_PAGE[index..]);
 
     result
 }
 
-fn add_swagger_data(result: &mut Vec<u8>, app: &AppContext) {
+async fn add_swagger_data(result: &mut Vec<u8>, app: &AppContext) {
     let mut no = 0;
-    for route in &app.settings.routes {
+    for route in &app.settings.get_routes().await {
         if no > 0 {
             result.push(',' as u8);
         }

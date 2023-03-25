@@ -1,3 +1,3 @@
 FROM rust:slim
-COPY ./target/release/my_swagger_hub ./target/release/my_swagger_hub 
-ENTRYPOINT ["./target/release/my_swagger_hub"]
+COPY ./target/release/my-swagger-hub ./target/release/my-swagger-hub 
+ENTRYPOINT ["./target/release/my-swagger-hub"]
