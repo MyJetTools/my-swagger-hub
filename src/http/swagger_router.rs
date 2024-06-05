@@ -33,7 +33,7 @@ impl HttpServerMiddleware for SwaggerRouterMiddleware {
                 if let Some(host) = ctx.request.get_headers().try_get_case_insensitive("host") {
                     let host = host.as_str().unwrap();
                     println!("Overridden host: {}", host);
-                    fl_url = fl_url.with_header("Host", host);
+                    fl_url = fl_url.with_header("host", host);
                 }
 
                 fl_url = fl_url.with_header("X-Forwarded-Proto", get_scheme(&ctx));
