@@ -120,7 +120,15 @@ impl HttpServerMiddleware for SwaggerMiddleware {
             });
         }
 
-        return Err(HttpFailResult::as_not_found("Not found".to_string(), false));
+        let new_url = format!("{}://{}/swagger/index.html", scheme, host);
+        let output = HttpOutput::Redirect {
+            url: new_url,
+            permanent: false,
+        };
+        return Ok(HttpOkResult {
+            write_telemetry: false,
+            output,
+        });
 
         /*
         let result = my_http_server::files::get(format!("./wwwroot{}", path).as_str()).await;
