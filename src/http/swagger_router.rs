@@ -1,8 +1,8 @@
 use std::sync::Arc;
 
 use my_http_server::{
-    HttpContext, HttpFailResult, HttpOkResult, HttpOutput, HttpServerMiddleware,
-    HttpServerRequestFlow, WebContentType,
+    HttpContext, HttpFailResult, HttpOkResult, HttpOutput, HttpRequestHeaders,
+    HttpServerMiddleware, HttpServerRequestFlow, WebContentType,
 };
 
 use crate::app::AppContext;
@@ -30,7 +30,8 @@ impl HttpServerMiddleware for SwaggerRouterMiddleware {
             if route.url == path {
                 let mut fl_url = flurl::FlUrl::new(route.remote_url.as_str());
 
-                if let Some(host) = ctx.request.get_header("host") {
+                if let Some(host) = ctx.request.get_headers().try_get_case_insensitive("host") {
+                    let host = host.as_str().unwrap();
                     println!("Overridden host: {}", host);
                     fl_url = fl_url.with_header("Host", host);
                 }
@@ -69,12 +70,20 @@ impl HttpServerMiddleware for SwaggerRouterMiddleware {
 }
 
 fn get_scheme(header_map: &HttpContext) -> &str {
-    if let Some(value) = header_map.request.get_header("x-forwarded-proto") {
-        return value;
+    if let Some(value) = header_map
+        .request
+        .get_headers()
+        .try_get_case_insensitive("x-forwarded-proto")
+    {
+        return value.as_str().unwrap();
     }
 
-    if let Some(value) = header_map.request.get_header("scheme") {
-        return value;
+    if let Some(value) = header_map
+        .request
+        .get_headers()
+        .try_get_case_insensitive("scheme")
+    {
+        return value.as_str().unwrap();
     }
 
     return "http";

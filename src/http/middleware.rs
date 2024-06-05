@@ -2,10 +2,7 @@ use std::sync::Arc;
 
 use crate::{app::AppContext, resources};
 use async_trait::async_trait;
-use my_http_server::{
-    HttpContext, HttpFailResult, HttpOkResult, HttpOutput, HttpServerMiddleware,
-    HttpServerRequestFlow, WebContentType,
-};
+use my_http_server::*;
 
 pub struct SwaggerMiddleware {
     app: Arc<AppContext>,
@@ -123,6 +120,9 @@ impl HttpServerMiddleware for SwaggerMiddleware {
             });
         }
 
+        return Err(HttpFailResult::as_not_found("Not found".to_string(), false));
+
+        /*
         let result = my_http_server::files::get(format!("./wwwroot{}", path).as_str()).await;
 
         match result {
@@ -149,6 +149,7 @@ impl HttpServerMiddleware for SwaggerMiddleware {
                 });
             }
         }
+         */
     }
 }
 
