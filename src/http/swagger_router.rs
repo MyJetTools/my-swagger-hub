@@ -24,10 +24,10 @@ impl HttpServerMiddleware for SwaggerRouterMiddleware {
         ctx: &mut HttpContext,
         get_next: &mut HttpServerRequestFlow,
     ) -> Result<HttpOkResult, HttpFailResult> {
-        let path = ctx.request.get_path().to_lowercase();
+        let path = ctx.request.get_path();
 
         for route in self.app.settings.get_routes().await {
-            if route.url == path {
+            if route.url == path.as_str() {
                 let mut fl_url = flurl::FlUrl::new(route.remote_url.as_str());
 
                 if let Some(host) = ctx.request.get_headers().try_get_case_insensitive("host") {

@@ -25,13 +25,13 @@ impl HttpServerMiddleware for SwaggerMiddleware {
         ctx: &mut HttpContext,
         get_next: &mut HttpServerRequestFlow,
     ) -> Result<HttpOkResult, HttpFailResult> {
-        let path = ctx.request.get_path().to_lowercase();
+        let path = ctx.request.get_path();
 
-        if !path.starts_with("/swagger") {
+        if !path.starts_with_case_insensitive("/swagger") {
             return get_next.next(ctx).await;
         }
 
-        if path == "/swagger/index.html" {
+        if path.equals_to_case_insensitive("/swagger/index.html") {
             let output = HttpOutput::Content {
                 headers: None,
                 content_type: Some(WebContentType::Html),
@@ -43,7 +43,7 @@ impl HttpServerMiddleware for SwaggerMiddleware {
             });
         }
 
-        if path == "/swagger/swagger-ui.css" {
+        if path.equals_to_case_insensitive("/swagger/swagger-ui.css") {
             let output = HttpOutput::Content {
                 headers: None,
                 content_type: Some(WebContentType::Css),
@@ -55,7 +55,7 @@ impl HttpServerMiddleware for SwaggerMiddleware {
             });
         }
 
-        if path == "/swagger/swagger-ui-bundle.js" {
+        if path.equals_to_case_insensitive("/swagger/swagger-ui-bundle.js") {
             let output = HttpOutput::Content {
                 headers: None,
                 content_type: Some(WebContentType::JavaScript),
@@ -67,7 +67,7 @@ impl HttpServerMiddleware for SwaggerMiddleware {
             });
         }
 
-        if path == "/swagger/swagger-ui-standalone-preset.js" {
+        if path.equals_to_case_insensitive("/swagger/swagger-ui-standalone-preset.js") {
             let output = HttpOutput::Content {
                 headers: None,
                 content_type: Some(WebContentType::JavaScript),
@@ -79,7 +79,7 @@ impl HttpServerMiddleware for SwaggerMiddleware {
             });
         }
 
-        if path == "/swagger/favicon-32x32.png" {
+        if path.equals_to_case_insensitive("/swagger/favicon-32x32.png") {
             let output = HttpOutput::Content {
                 headers: None,
                 content_type: Some(WebContentType::Png),
@@ -91,7 +91,7 @@ impl HttpServerMiddleware for SwaggerMiddleware {
             });
         }
 
-        if path == "/swagger/favicon-16x16.png" {
+        if path.equals_to_case_insensitive("/swagger/favicon-16x16.png") {
             let output = HttpOutput::Content {
                 headers: None,
                 content_type: Some(WebContentType::Png),
@@ -107,18 +107,20 @@ impl HttpServerMiddleware for SwaggerMiddleware {
 
         let host = ctx.request.get_host();
 
-        if path == "/swagger" {
-            let new_url = format!("{}://{}/swagger/index.html", scheme, host);
+        /*
+               if path.equals_to("/swagger") {
+                   let new_url = format!("{}://{}/swagger/index.html", scheme, host);
 
-            let output = HttpOutput::Redirect {
-                url: new_url,
-                permanent: false,
-            };
-            return Ok(HttpOkResult {
-                write_telemetry: false,
-                output,
-            });
-        }
+                   let output = HttpOutput::Redirect {
+                       url: new_url,
+                       permanent: false,
+                   };
+                   return Ok(HttpOkResult {
+                       write_telemetry: false,
+                       output,
+                   });
+               }
+        */
 
         let new_url = format!("{}://{}/swagger/index.html", scheme, host);
         let output = HttpOutput::Redirect {
