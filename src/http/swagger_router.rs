@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use my_http_server::{
     HttpContext, HttpFailResult, HttpOkResult, HttpOutput, HttpRequestHeaders,
-    HttpServerMiddleware, HttpServerRequestFlow, WebContentType,
+    HttpServerMiddleware, WebContentType,
 };
 
 use crate::app::AppContext;
@@ -22,8 +22,7 @@ impl HttpServerMiddleware for SwaggerRouterMiddleware {
     async fn handle_request(
         &self,
         ctx: &mut HttpContext,
-        get_next: &mut HttpServerRequestFlow,
-    ) -> Result<HttpOkResult, HttpFailResult> {
+    ) -> Option<Result<HttpOkResult, HttpFailResult>> {
         let path = ctx.request.get_path();
 
         for route in self.app.settings.get_routes().await {
@@ -47,25 +46,25 @@ impl HttpServerMiddleware for SwaggerRouterMiddleware {
                             content_type: Some(WebContentType::Json),
                             content: body,
                         };
-                        return Ok(HttpOkResult {
+                        return Some(Ok(HttpOkResult {
                             write_telemetry: false,
                             output,
-                        });
+                        }));
                     }
                     Err(err) => {
-                        return Err(HttpFailResult {
+                        return Some(Err(HttpFailResult {
                             write_telemetry: false,
                             status_code: 503,
                             content_type: WebContentType::Text,
                             content: format!("{:?}", err).into_bytes(),
                             write_to_log: true,
-                        });
+                        }));
                     }
                 }
             }
         }
 
-        get_next.next(ctx).await
+        None
     }
 }
 
